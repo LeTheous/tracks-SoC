@@ -8,7 +8,7 @@ module top(
     input wire wb_rst,
 
     // Debug LED
-    output wire [11:0] gpio,
+    output wire [10:0] gpio,
 
     // Uart bridge to MCU
     input wire MCU_UART_TX,

@@ -1,6 +1,7 @@
 build/
 log.txt
 netlist.json
+out.rbf
 .vscode/
 .scala-build/
 .metals/

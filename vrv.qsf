@@ -13,7 +13,7 @@ set_instance_assignment -name IO_STANDARD "2.5 V" -to gpio[7]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to gpio[8]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to gpio[9]
 set_instance_assignment -name IO_STANDARD "2.5 V" -to gpio[10]
-set_instance_assignment -name IO_STANDARD "2.5 V" -to gpio[11]
+
 
 
 set_location_assignment PIN_R20 -to wb_clk
@@ -28,7 +28,6 @@ set_location_assignment PIN_A5 -to gpio[4]
 set_location_assignment PIN_B6 -to gpio[5]
 set_location_assignment PIN_H8 -to gpio[6]
 set_location_assignment PIN_H9 -to gpio[7]
-set_location_assignment PIN_P11 -to gpio[8]
-set_location_assignment PIN_P12 -to gpio[9]
-set_location_assignment PIN_Y15 -to gpio[10]
-set_location_assignment PIN_Y16 -to gpio[11]
+set_location_assignment PIN_P12 -to gpio[8]
+set_location_assignment PIN_Y15 -to gpio[9]
+set_location_assignment PIN_Y16 -to gpio[10]

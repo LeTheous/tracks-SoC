@@ -2,8 +2,8 @@ module gpio_wb(
     // RCC
     input wire i_clk,
     input wire i_reset,
-    // 8 LEDs + 4 buttons
-    output reg [11:0] o_gpio_val,
+    // 8 LEDs + 3 buttons
+    output reg [10:0] o_gpio_val,
     // Wishbone
     input  wire [31:0] i_wb_adr,
     input  wire [31:0] i_wb_dat,
@@ -15,7 +15,7 @@ module gpio_wb(
     output reg         o_wb_ack
 );
 
-localparam num = 12;
+localparam num = 11;
 
 // 1-bit register per gpio pin
 reg gpio_val [num];
@@ -28,9 +28,7 @@ always @(posedge i_clk) begin
     gpio_val[8] <= o_gpio_val[8];
     gpio_val[9] <= o_gpio_val[9];
     gpio_val[10] <= o_gpio_val[10];
-    gpio_val[11] <= o_gpio_val[11];
     o_gpio_val <={
-        gpio_val[11],
         gpio_val[10],
         gpio_val[9],
         gpio_val[8],
