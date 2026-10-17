@@ -133,10 +133,23 @@ object GenVexRiscv{
                 mcycleAccess   = CsrAccess.READ_WRITE,
                 minstretAccess = CsrAccess.NONE,
                 ecallGen       = false,
+                userGen        = true,
+                supervisorGen  = true,
+                stvecAccess    = CsrAccess.READ_WRITE,
+                sepcAccess     = CsrAccess.READ_WRITE,
+                scauseAccess   = CsrAccess.READ_WRITE,
+                sbadaddrAccess = CsrAccess.READ_WRITE,
+                scycleAccess   = CsrAccess.READ_WRITE,
+                sinstretAccess = CsrAccess.READ_WRITE,
+                satpAccess     = CsrAccess.READ_WRITE,
                 wfiGenAsWait   = false,
                 ucycleAccess   = CsrAccess.READ_ONLY,
                 uinstretAccess = CsrAccess.NONE
               )
+          ),
+          new PmpPlugin(
+            regions = 16,
+            ioRange = _(31 downto 28) === 0xf
           ),
 
           new YamlPlugin("cpu0.yaml")

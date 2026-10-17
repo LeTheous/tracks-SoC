@@ -1,1 +1,6 @@
 build/
+log.txt
+netlist.json
+.vscode/
+.scala-build/
+.metals/

@@ -1,13 +1,14 @@
 `default_nettype none
 
-`define CLOCK_HZ 42_000_000
+`define CLOCK_HZ 50_000_000
 
 module top(
     // External oscillator
-    input wire CLK_12MHZ,
+    input wire wb_clk,
+    input wire wb_rst,
 
     // Debug LED
-    output wire [2:0] LED,
+    output wire [11:0] gpio,
 
     // Uart bridge to MCU
     input wire MCU_UART_TX,
@@ -16,28 +17,13 @@ module top(
 
 `include "gen/wb_intercon.vh"
 
-// PLL
-wire wb_clk;
-ice_pll pll (
-    .clock_in(CLK_12MHZ),
-    .clock_out(wb_clk),
-    .locked()
-);
-
-// Initial reset
-reg [7:0] reset_counter = 8'hFF;
-wire reset = ~(reset_counter == 0);
-wire wb_rst = reset; // Generated wishbone bus assumes this signal
-always @(posedge wb_clk)
-    if (reset_counter > 0)
-        reset_counter <= reset_counter - 1;
 
 // CPU RAM
 wb_ram #(
     .SIZE(512) // in 32-bit words, so 2KiB
 ) cpu0_ram (
     .i_clk(wb_clk),
-    .i_reset(reset),
+    .i_reset(wb_rst),
     .i_wb_adr(wb_m2s_cpu0_ram_adr),
     .i_wb_dat(wb_m2s_cpu0_ram_dat),
     .i_wb_sel(wb_m2s_cpu0_ram_sel),
@@ -52,10 +38,10 @@ wb_ram #(
 // We initialize this directly from the hex file with our firmware in it
 wb_ram #(
     .SIZE(1024), // 4KiB
-    .INITIAL_HEX("ice40_soc_fw_hex")
+    // .INITIAL_HEX("")
 ) cpu0_rom (
     .i_clk(wb_clk),
-    .i_reset(reset),
+    .i_reset(wb_rst),
     .i_wb_adr(wb_m2s_cpu0_rom_adr),
     .i_wb_dat(wb_m2s_cpu0_rom_dat),
     .i_wb_sel(wb_m2s_cpu0_rom_sel),
@@ -72,7 +58,7 @@ timer_wb #(
     .DEFAULT_PRESCALER(`CLOCK_HZ / 1000 - 1)
 ) timer0 (
     .i_clk(wb_clk),
-    .i_reset(reset),
+    .i_reset(wb_rst),
     .o_timer_trigger(timer_interrupt),
     .i_wb_adr(wb_m2s_timer0_adr),
     .i_wb_dat(wb_m2s_timer0_dat),
@@ -91,7 +77,7 @@ uart_wb #(
     .DATA_WIDTH(8)
 ) uart0 (
     .i_clk(wb_clk),
-    .i_reset(reset),
+    .i_reset(wb_rst),
     .i_uart_rx(MCU_UART_TX),
     .o_uart_tx(MCU_UART_RX),
     .i_wb_adr(wb_m2s_uart0_adr),
@@ -104,20 +90,20 @@ uart_wb #(
     .o_wb_ack(wb_s2m_uart0_ack)
 );
 
-// RGB LED
+// GPIO
 
-rgb_led_wb led0 (
+gpio_wb gpio0 (
     .i_clk(wb_clk),
-    .i_reset(reset),
-    .o_led_bgr(LED),
-    .i_wb_adr(wb_m2s_led0_adr),
-    .i_wb_dat(wb_m2s_led0_dat),
-    .i_wb_sel(wb_m2s_led0_sel),
-    .i_wb_we (wb_m2s_led0_we),
-    .i_wb_cyc(wb_m2s_led0_cyc),
-    .i_wb_stb(wb_m2s_led0_stb),
-    .o_wb_dat(wb_s2m_led0_dat),
-    .o_wb_ack(wb_s2m_led0_ack)
+    .i_reset(wb_rst),
+    .o_gpio_val(gpio),
+    .i_wb_adr(wb_m2s_gpio0_adr),
+    .i_wb_dat(wb_m2s_gpio0_dat),
+    .i_wb_sel(wb_m2s_gpio0_sel),
+    .i_wb_we (wb_m2s_gpio0_we),
+    .i_wb_cyc(wb_m2s_gpio0_cyc),
+    .i_wb_stb(wb_m2s_gpio0_stb),
+    .o_wb_dat(wb_s2m_gpio0_dat),
+    .o_wb_ack(wb_s2m_gpio0_ack)
 );
 
 
@@ -125,7 +111,7 @@ rgb_led_wb led0 (
 VexRiscv cpu0 (
     // RCC
     .clk(wb_clk),
-    .reset(reset),
+    .reset(wb_rst),
 
     // PC value after reset
     // Here hardcoded to our ROM address base

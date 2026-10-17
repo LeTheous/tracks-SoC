@@ -9,7 +9,7 @@ parameters:
       slaves: [cpu0_rom, cpu0_ram,
                timer0,
                uart0,
-               led0]
+               gpio0]
 
   slaves:
     timer0:
@@ -20,7 +20,7 @@ parameters:
       offset: 0x40001000
       size:   0x1000
 
-    led0:
+    gpio0:
       offset: 0x40002000
       size:   0x1000
 
